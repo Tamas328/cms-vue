@@ -17,7 +17,7 @@
         <tr v-for="employee in employees" :key="employee.id" class="centered">
           <td>
             <img
-              :src="'https://firebasestorage.googleapis.com/v0/b/cms-internship.appspot.com/o/avatar1.png?alt=media&token=17127a58-40e0-485a-9558-52be85523f3c'"
+              :src="'https://firebasestorage.googleapis.com/v0/b/cms-internship.appspot.com/o/avatar2.png?alt=media&token=f3de89bd-03a2-4021-b139-456ecb77864e'"
               width="50"
             />
           </td>
@@ -30,7 +30,11 @@
             <font-awesome-icon icon="user-edit" size="lg"></font-awesome-icon>
           </td>
           <td>
-            <font-awesome-icon icon="user-minus" size="lg"></font-awesome-icon>
+            <font-awesome-icon
+              @click="$emit('delete', employee.id)"
+              icon="user-minus"
+              size="lg"
+            ></font-awesome-icon>
           </td>
         </tr>
       </tbody>
@@ -40,7 +44,8 @@
 
 <script>
 export default {
-    props: ['employees']
+    props: ['employees'],
+    emits: ['delete']
 }
 </script>
 

@@ -1,6 +1,11 @@
 <template>
   <div class="new-employee-form">
     <form @submit.prevent="submitData">
+      <div v-if="errors.length">
+        <p v-for="error in errors" :key="error">
+          {{ error }}
+        </p>
+      </div>
       <div class="col-lg-10 top10">
         <input
           type="text"
@@ -39,13 +44,17 @@
       </div>
       <div class="col-lg-10 top10">
         <input
+          ref="fileUpload"
           type="file"
           class="form-control"
           @change="processImage($event)"
         />
       </div>
-      <div class="col-lg-10">
-        <button class="btn btn-primary">Add employee</button>
+      <div class="col-lg-10 form-buttons">
+        <button type="submit" class="btn btn-primary">Add employee</button>
+        <button type="reset" @click="resetForm" class="btn btn-primary">
+          Reset
+        </button>
       </div>
     </form>
   </div>
@@ -56,6 +65,7 @@ export default {
     emits: ['add-employee'],
     data() {
         return {
+            errors: [],
             enteredFirstName: '',
             enteredLastName: '',
             enteredEmail: '',
@@ -67,9 +77,23 @@ export default {
     methods: {
         submitData() {
             this.$emit('add-employee', this.enteredFirstName, this.enteredLastName, this.enteredEmail, this.selectedGender, this.enteredBirthdate, this.enteredImage);
+            this.enteredFirstName = '';
+            this.enteredLastName = '';
+            this.enteredEmail = '';
+            this.selectedGender = '';
+            this.enteredBirthdate = '';
+            this.$refs.fileUpload.value=null;
         },
         processImage(event) {
             this.enteredImage = event.target.files[0];
+        },
+        resetForm() {
+            this.enteredFirstName = '';
+            this.enteredLastName = '';
+            this.enteredEmail = '';
+            this.selectedGender = '';
+            this.enteredBirthdate = '';
+            this.$refs.fileUpload.value=null;
         }
     }
 }
@@ -93,5 +117,12 @@ button {
   color: black;
   background-color: transparent;
   border: 2px solid #d3ac2b;
+}
+
+.form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 </style>

@@ -1,27 +1,22 @@
 <template>
   <div class="main">
     <new-employee @add-employee="addEmployee"></new-employee>
-    <employee-table :employees="employees"></employee-table>
+    <employee-table
+      :employees="employees"
+      @delete="deleteEmployee"
+    ></employee-table>
   </div>
 </template>
 
 <script>
+import moment from 'moment'
 import EmployeeTable from './components/EmployeeTable.vue'
 
 export default {
   components: { EmployeeTable },
   data() {
     return {
-      employees: [{
-        id: 'emp1',
-        firstName: 'Tamas',
-        lastName: 'Csep',
-        email: 'tamascsep@gmail.com',
-        gender: 'Male',
-        birthdate: '2000-03-28',
-        image: 'avatar3.png'
-      },
-      ]
+      employees: []
     }
   },
   methods: {
@@ -32,10 +27,13 @@ export default {
         lastName: lastName,
         email: email,
         gender: gender,
-        birthdate: birthdate,
+        birthdate: moment(birthdate).format('D MMMM YYYY'),
         image: image.name,
       };
       this.employees.push(newEmployee);
+    },
+    deleteEmployee(employeeID) {
+      this.employees = this.employees.filter((employee) => employee.id !== employeeID);
     }
   }
 }
