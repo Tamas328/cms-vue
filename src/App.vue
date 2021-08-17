@@ -1,16 +1,15 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="main">
+    <new-employee></new-employee>
+    <employee-table></employee-table>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import EmployeeTable from './components/EmployeeTable.vue'
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+  components: { EmployeeTable },
+
 }
 </script>
 
@@ -22,5 +21,28 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.new-employee-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  margin-left: 5rem;
+  width: 50%;
+}
+
+.emp-table {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  margin-right: 5rem;
+  margin-left: 1rem;
+  width: 100%;
 }
 </style>
