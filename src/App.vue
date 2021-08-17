@@ -1,15 +1,43 @@
 <template>
   <div class="main">
-    <new-employee></new-employee>
-    <employee-table></employee-table>
+    <new-employee @add-employee="addEmployee"></new-employee>
+    <employee-table :employees="employees"></employee-table>
   </div>
 </template>
 
 <script>
 import EmployeeTable from './components/EmployeeTable.vue'
+
 export default {
   components: { EmployeeTable },
-
+  data() {
+    return {
+      employees: [{
+        id: 'emp1',
+        firstName: 'Tamas',
+        lastName: 'Csep',
+        email: 'tamascsep@gmail.com',
+        gender: 'Male',
+        birthdate: '2000-03-28',
+        image: 'avatar3.png'
+      },
+      ]
+    }
+  },
+  methods: {
+    addEmployee(firstName, lastName, email, gender, birthdate, image) {
+      const newEmployee = {
+        id: new Date().toISOString(),
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        gender: gender,
+        birthdate: birthdate,
+        image: image.name,
+      };
+      this.employees.push(newEmployee);
+    }
+  }
 }
 </script>
 
@@ -21,6 +49,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+body {
+  background-color: #f4f3ea;
 }
 
 .main {
