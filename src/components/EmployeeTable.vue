@@ -16,10 +16,7 @@
       <tbody id="table-list" class="centered table-light">
         <tr v-for="employee in employees" :key="employee.id" class="centered">
           <td>
-            <img
-              :src="'https://firebasestorage.googleapis.com/v0/b/cms-internship.appspot.com/o/avatar2.png?alt=media&token=f3de89bd-03a2-4021-b139-456ecb77864e'"
-              width="50"
-            />
+            <img :src="require('@/assets/' + employee.image)" width="50" />
           </td>
           <td>{{ employee.firstName }}</td>
           <td>{{ employee.lastName }}</td>
@@ -43,10 +40,40 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-    props: ['employees'],
-    emits: ['delete']
-}
+  emits: ["delete"],
+  data() {
+    return {
+      employees: [],
+    };
+  },
+  created() {
+    axios
+      .get(
+        "https://cms-internship-default-rtdb.europe-west1.firebasedatabase.app/employees.json"
+      )
+      .then((response) => {
+        return response.data;
+      })
+      .then((data) => {
+        const employees = [];
+        for (const id in data) {
+          employees.push({
+            id: id,
+            image: data[id].image,
+            firstName: data[id].firstName,
+            lastName: data[id].lastName,
+            email: data[id].email,
+            sex: data[id].sex,
+            birthdate: data[id].birthdate,
+          });
+        }
+        this.employees = employees;
+      });
+  },
+};
 </script>
 
 <style scoped>

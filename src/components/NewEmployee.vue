@@ -12,6 +12,7 @@
           placeholder="First name"
           v-model="enteredFirstName"
           class="form-control"
+          v-on:keypress="isLetter($event)"
         />
       </div>
       <div class="col-lg-10 top10">
@@ -20,6 +21,7 @@
           placeholder="Last name"
           v-model="enteredLastName"
           class="form-control"
+          v-on:keypress="isLetter($event)"
         />
       </div>
       <div class="col-lg-10 top10">
@@ -61,42 +63,60 @@
 </template>
 
 <script>
+import axios from "axios";
+import moment from "moment";
 export default {
-    emits: ['add-employee'],
-    data() {
-        return {
-            errors: [],
-            enteredFirstName: '',
-            enteredLastName: '',
-            enteredEmail: '',
-            selectedGender: '',
-            enteredBirthdate: '',
-            enteredImage: ''
-        };
-    },
-    methods: {
-        submitData() {
-            this.$emit('add-employee', this.enteredFirstName, this.enteredLastName, this.enteredEmail, this.selectedGender, this.enteredBirthdate, this.enteredImage);
-            this.enteredFirstName = '';
-            this.enteredLastName = '';
-            this.enteredEmail = '';
-            this.selectedGender = '';
-            this.enteredBirthdate = '';
-            this.$refs.fileUpload.value=null;
-        },
-        processImage(event) {
-            this.enteredImage = event.target.files[0];
-        },
-        resetForm() {
-            this.enteredFirstName = '';
-            this.enteredLastName = '';
-            this.enteredEmail = '';
-            this.selectedGender = '';
-            this.enteredBirthdate = '';
-            this.$refs.fileUpload.value=null;
+  emits: ["add-employee"],
+  data() {
+    return {
+      errors: [],
+      enteredFirstName: "",
+      enteredLastName: "",
+      enteredEmail: "",
+      selectedGender: "",
+      enteredBirthdate: "",
+      enteredImage: "",
+    };
+  },
+  methods: {
+    submitData() {
+      axios.post(
+        "https://cms-internship-default-rtdb.europe-west1.firebasedatabase.app/employees.json",
+        {
+          firstName: this.enteredFirstName,
+          lastName: this.enteredLastName,
+          email: this.enteredEmail,
+          gender: this.selectedGender,
+          birthdate: moment(this.enteredBirthdate).format("D MMMM YYYY"),
+          image: this.enteredImage.name,
         }
-    }
-}
+      );
+
+      this.enteredFirstName = "";
+      this.enteredLastName = "";
+      this.enteredEmail = "";
+      this.selectedGender = "";
+      this.enteredBirthdate = "";
+      this.$refs.fileUpload.value = null;
+    },
+    processImage(event) {
+      this.enteredImage = event.target.files[0];
+    },
+    resetForm() {
+      this.enteredFirstName = "";
+      this.enteredLastName = "";
+      this.enteredEmail = "";
+      this.selectedGender = "";
+      this.enteredBirthdate = "";
+      this.$refs.fileUpload.value = null;
+    },
+    isLetter(e) {
+      let char = String.fromCharCode(e.keyCode);
+      if (/^[A-Za-z]+$/.test(char)) return true;
+      else e.preventDefault();
+    },
+  },
+};
 </script>
 <style scoped>
 .top10 {

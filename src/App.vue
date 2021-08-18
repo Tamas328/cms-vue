@@ -1,42 +1,26 @@
 <template>
   <div class="main">
-    <new-employee @add-employee="addEmployee"></new-employee>
-    <employee-table
-      :employees="employees"
-      @delete="deleteEmployee"
-    ></employee-table>
+    <new-employee></new-employee>
+    <employee-table @delete="deleteEmployee"></employee-table>
   </div>
 </template>
 
 <script>
-import moment from 'moment'
-import EmployeeTable from './components/EmployeeTable.vue'
+import EmployeeTable from "./components/EmployeeTable.vue";
 
 export default {
   components: { EmployeeTable },
   data() {
     return {
-      employees: []
-    }
+      employees: [],
+    };
   },
   methods: {
-    addEmployee(firstName, lastName, email, gender, birthdate, image) {
-      const newEmployee = {
-        id: new Date().toISOString(),
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        gender: gender,
-        birthdate: moment(birthdate).format('D MMMM YYYY'),
-        image: image.name,
-      };
-      this.employees.push(newEmployee);
-    },
     deleteEmployee(employeeID) {
-      this.employees = this.employees.filter((employee) => employee.id !== employeeID);
-    }
-  }
-}
+      console.log(employeeID);
+    },
+  },
+};
 </script>
 
 <style>
