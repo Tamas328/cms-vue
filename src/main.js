@@ -3,6 +3,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import NewEmployee from "./components/NewEmployee.vue";
 import EmployeeTable from "./components/EmployeeTable.vue";
+import EditEmployee from "./components/EditEmployee.vue";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faUserEdit } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +17,7 @@ const app = createApp(App);
 
 app.component("new-employee", NewEmployee);
 app.component("employee-table", EmployeeTable);
+app.component("edit-employee", EditEmployee);
 app.component("font-awesome-icon", FontAwesomeIcon);
 
 app.mount("#app");

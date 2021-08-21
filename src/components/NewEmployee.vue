@@ -63,12 +63,15 @@
 </template>
 
 <script>
-import axios from "axios";
 import moment from "moment";
+import { projectFirestore } from "../firebase/config";
 export default {
   emits: ["add-employee"],
   data() {
     return {
+      myFile: null,
+      processing: false,
+      fileURL: null,
       errors: [],
       enteredFirstName: "",
       enteredLastName: "",
@@ -79,18 +82,17 @@ export default {
     };
   },
   methods: {
-    submitData() {
-      axios.post(
-        "https://cms-internship-default-rtdb.europe-west1.firebasedatabase.app/employees.json",
-        {
-          firstName: this.enteredFirstName,
-          lastName: this.enteredLastName,
-          email: this.enteredEmail,
-          gender: this.selectedGender,
-          birthdate: moment(this.enteredBirthdate).format("D MMMM YYYY"),
-          image: this.enteredImage.name,
-        }
-      );
+    async submitData() {
+      const newEmployee = {
+        firstName: this.enteredFirstName,
+        lastName: this.enteredLastName,
+        email: this.enteredEmail,
+        gender: this.selectedGender,
+        birthdate: moment(this.enteredBirthdate).format("D MMMM YYYY"),
+        avatar: this.enteredImage.name,
+      };
+
+      await projectFirestore.collection("employees").add(newEmployee);
 
       this.enteredFirstName = "";
       this.enteredLastName = "";
