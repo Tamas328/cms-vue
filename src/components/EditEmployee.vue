@@ -9,9 +9,7 @@
       <section>
         <slot></slot>
       </section>
-      <menu>
-        <slot name="actions"></slot>
-      </menu>
+      <slot name="actions"></slot>
     </dialog>
   </div>
 </template>
@@ -37,11 +35,14 @@ export default {
 
 <style scoped>
 div {
-  position: fixed;
+  position: absolute;
   display: flex;
   justify-content: center;
+  align-content: center;
+  align-items: center;
   top: 0;
   left: 0;
+  transform: translate(0, 0);
   height: 100vh;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.3);
@@ -49,43 +50,38 @@ div {
 }
 
 dialog {
-  position: absolute;
+  position: relative;
   overflow-y: auto;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 12px;
+  width: 500px;
+  border-radius: 6px;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   margin: 0 auto;
   padding: 0;
+  margin: 1rem;
+  transition: transform 0.3s ease-out, -webkit-transform 0.3s ease-out;
+}
+
+@media (min-width: 576px) {
+  dialog {
+    min-width: 20rem;
+    margin: 1.75rem auto;
+  }
 }
 
 header {
-  color: black;
-  width: 100%;
-  padding: 1rem;
-}
-
-header h2 {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  justify-content: flex-start;
-  margin: 0;
-}
-
-section {
-  padding: 1rem;
-}
-
-menu {
-  margin: 0;
-  padding: 1rem;
-}
-
-@media (min-width: 768px) {
-  dialog {
-    left: calc(50% - 20rem);
-    width: 40rem;
-  }
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  border-bottom: 1px solid #e9ecef;
+  border-top-left-radius: 0.3rem;
+  border-top-right-radius: 0.3rem;
+  align-items: center;
 }
 </style>

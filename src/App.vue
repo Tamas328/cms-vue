@@ -1,22 +1,16 @@
 <template>
-  <edit-employee
-    v-if="showModal"
-    v-bind:toEditEmployee="toEditEmployee"
-    title="Edit employee"
-  >
+  <edit-employee v-if="showModal" title="Edit employee">
     <template #header>
-      <div class="modal-header">
-        <h3 class="modal-title">Edit Employee</h3>
-        <button
-          type="button"
-          class="close"
-          aria-label="Close"
-          style="background-color: transparent; border: none;"
-          @click="closeModal"
-        >
-          <span style="font-size: 32px">&times;</span>
-        </button>
-      </div>
+      <h5 class="modal-title">Edit Employee</h5>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        style="background-color: transparent; border: none; margin: 0;"
+        @click="closeModal"
+      >
+        <span style="font-size: 2rem;">&times;</span>
+      </button>
     </template>
     <template #default>
       <div class="modal-body">
@@ -194,6 +188,12 @@ body {
   background-color: #f4f3ea;
 }
 
+h5 {
+  margin: 0;
+  margin-left: 1em;
+  line-height: 1.5;
+}
+
 .main {
   display: flex;
   flex-direction: row;
@@ -233,6 +233,11 @@ body {
   color: black;
   background-color: transparent;
   border: 2px solid #d3ac2b;
+}
+
+.close {
+  padding: 1rem;
+  margin: 0rem 0rem 0rem auto;
 }
 
 .close:hover {
