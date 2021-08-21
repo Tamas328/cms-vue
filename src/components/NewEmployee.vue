@@ -90,7 +90,12 @@ export default {
         gender: this.selectedGender,
         birthdate: moment(this.enteredBirthdate).format("D MMMM YYYY"),
         avatar: this.enteredImage.name,
+        createdAt: new Date(),
       };
+
+      if (!newEmployee.avatar) {
+        newEmployee.avatar = "default.png";
+      }
 
       await projectFirestore.collection("employees").add(newEmployee);
 

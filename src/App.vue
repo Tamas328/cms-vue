@@ -130,7 +130,7 @@ export default {
     return {
       showModal: false,
       employees: [],
-      toEditEmployee: "",
+      toEditEmployee: {},
     };
   },
   methods: {

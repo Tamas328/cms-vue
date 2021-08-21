@@ -64,12 +64,15 @@ export default {
   data() {
     const employees = ref([]);
 
-    projectFirestore.collection("employees").onSnapshot((snap) => {
-      let docs = snap.docs.map((doc) => {
-        return { ...doc.data(), id: doc.id };
+    projectFirestore
+      .collection("employees")
+      .orderBy("createdAt", "desc")
+      .onSnapshot((snap) => {
+        let docs = snap.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        });
+        employees.value = docs;
       });
-      employees.value = docs;
-    });
 
     return { employees };
   },
