@@ -1,39 +1,50 @@
 <template>
   <div class="new-employee-form">
     <form @submit.prevent="submitData">
-      <div v-if="errors.length">
-        <p v-for="error in errors" :key="error">
-          {{ error }}
-        </p>
-      </div>
-      <div class="col-lg-10 top10">
+      <div
+        class="col-lg-10 top10"
+        :class="{ invalid: !enteredFirstName.isValid }"
+      >
         <input
           type="text"
           placeholder="First name"
-          v-model="enteredFirstName"
+          v-model.trim="enteredFirstName.val"
           class="form-control"
           v-on:keypress="isLetter($event)"
+          @blur="clearValidity('enteredFirstName')"
         />
       </div>
-      <div class="col-lg-10 top10">
+      <div
+        class="col-lg-10 top10"
+        :class="{ invalid: !enteredLastName.isValid }"
+      >
         <input
           type="text"
           placeholder="Last name"
-          v-model="enteredLastName"
+          v-model.trim="enteredLastName.val"
           class="form-control"
           v-on:keypress="isLetter($event)"
+          @blur="clearValidity('enteredLastName')"
         />
       </div>
-      <div class="col-lg-10 top10">
+      <div class="col-lg-10 top10" :class="{ invalid: !enteredEmail.isValid }">
         <input
           type="text"
           placeholder="E-mail"
-          v-model="enteredEmail"
+          v-model.trim="enteredEmail.val"
           class="form-control"
+          @blur="clearValidity('enteredEmail')"
         />
       </div>
-      <div class="col-lg-10 top10">
-        <select v-model="selectedGender" class="form-control">
+      <div
+        class="col-lg-10 top10"
+        :class="{ invalid: !selectedGender.isValid }"
+      >
+        <select
+          v-model="selectedGender.val"
+          class="form-control"
+          @blur="clearValidity('selectedGender')"
+        >
           <option disabled value="">Gender</option>
           <option>Female</option>
           <option>Male</option>
@@ -41,8 +52,18 @@
           <option>Prefer not to say</option>
         </select>
       </div>
-      <div class="col-lg-10 top10">
-        <input type="date" v-model="enteredBirthdate" class="form-control" />
+      <div
+        class="col-lg-10 top10"
+        :class="{ invalid: !enteredBirthdate.isValid }"
+      >
+        <input
+          type="date"
+          v-model="enteredBirthdate.val"
+          class="form-control"
+          @blur="clearValidity('enteredBirthdate')"
+          :max="maxDate"
+          min="1920-01-01"
+        />
       </div>
       <div class="col-lg-10 top10">
         <input
@@ -65,56 +86,128 @@
 <script>
 import moment from "moment";
 import { projectFirestore } from "../firebase/config";
+import useStorage from "@/firebase/useStorage";
+
 export default {
   emits: ["add-employee"],
   data() {
     return {
+      fileUp: useStorage(),
+      maxDate: moment(new Date())
+        .subtract(16, "years")
+        .format("YYYY-MM-DD"),
       myFile: null,
       processing: false,
       fileURL: null,
       errors: [],
-      enteredFirstName: "",
-      enteredLastName: "",
-      enteredEmail: "",
-      selectedGender: "",
-      enteredBirthdate: "",
+      enteredFirstName: {
+        val: "",
+        isValid: true,
+      },
+      enteredLastName: {
+        val: "",
+        isValid: true,
+      },
+      enteredEmail: {
+        val: "",
+        isValid: true,
+      },
+      selectedGender: {
+        val: "",
+        isValid: true,
+      },
+      enteredBirthdate: {
+        val: "",
+        isValid: true,
+      },
       enteredImage: "",
+      formIsValid: true,
     };
   },
   methods: {
+    clearValidity(input) {
+      this[input].isValid = true;
+    },
+    validateForm() {
+      this.formIsValid = true;
+      if (this.enteredFirstName.val === "") {
+        this.enteredFirstName.isValid = false;
+        this.formIsValid = false;
+      }
+      if (this.enteredLastName.val === "") {
+        this.enteredLastName.isValid = false;
+        this.formIsValid = false;
+      }
+      if (
+        this.enteredEmail.val === "" ||
+        !this.validateEmail(this.enteredEmail.val)
+      ) {
+        this.enteredEmail.isValid = false;
+        this.formIsValid = false;
+      }
+      if (this.selectedGender.val === "") {
+        this.selectedGender.isValid = false;
+        this.formIsValid = false;
+      }
+      if (this.enteredBirthdate.val === "") {
+        this.enteredBirthdate.isValid = false;
+        this.formIsValid = false;
+      }
+    },
+    validateEmail(email) {
+      var mailFormat = /^(([^<>()\]\\.,;:\s@"]+(\.[^<>()\]\\.,;:\s@"]+)*)|(".+"))@(([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return email.match(mailFormat);
+    },
     async submitData() {
-      const newEmployee = {
-        firstName: this.enteredFirstName,
-        lastName: this.enteredLastName,
-        email: this.enteredEmail,
-        gender: this.selectedGender,
-        birthdate: moment(this.enteredBirthdate).format("D MMMM YYYY"),
-        avatar: this.enteredImage.name,
-        createdAt: new Date(),
-      };
+      this.validateForm();
 
-      if (!newEmployee.avatar) {
-        newEmployee.avatar = "default.png";
+      if (!this.formIsValid) {
+        return;
       }
 
-      await projectFirestore.collection("employees").add(newEmployee);
+      if (!this.enteredImage.name) {
+        await projectFirestore.collection("employees").add({
+          firstName: this.enteredFirstName.val,
+          lastName: this.enteredLastName.val,
+          email: this.enteredEmail.val,
+          gender: this.selectedGender.val,
+          birthdate: moment(this.enteredBirthdate.val).format("D MMMM YYYY"),
+          avatar: "default.png",
+          createdAt: new Date(),
+        });
+      } else {
+        await this.fileUp.uploadImage(this.enteredImage);
+        await projectFirestore.collection("employees").add({
+          firstName: this.enteredFirstName.val,
+          lastName: this.enteredLastName.val,
+          email: this.enteredEmail.val,
+          gender: this.selectedGender.val,
+          birthdate: moment(this.enteredBirthdate.val).format("D MMMM YYYY"),
+          avatar: this.fileUp.url,
+          createdAt: new Date(),
+        });
+      }
 
-      this.enteredFirstName = "";
-      this.enteredLastName = "";
-      this.enteredEmail = "";
-      this.selectedGender = "";
-      this.enteredBirthdate = "";
+      this.enteredFirstName.val = "";
+      this.enteredFirstName.isValid = true;
+      this.enteredLastName.val = "";
+      this.enteredLastName.isValid = true;
+      this.enteredEmail.val = "";
+      this.enteredEmail.isValid = true;
+      this.selectedGender.val = "";
+      this.selectedGender.isValid = true;
+      this.enteredBirthdate.val = "";
       this.$refs.fileUpload.value = null;
     },
     processImage(event) {
       this.enteredImage = event.target.files[0];
     },
     resetForm() {
-      this.enteredFirstName = "";
-      this.enteredLastName = "";
-      this.enteredEmail = "";
-      this.selectedGender = "";
-      this.enteredBirthdate = "";
+      this.enteredFirstName.val = "";
+      this.enteredLastName.val = "";
+      this.enteredEmail.val = "";
+      this.selectedGender.val = "";
+      this.enteredBirthdate.val = "";
       this.$refs.fileUpload.value = null;
     },
     isLetter(e) {
@@ -151,5 +244,18 @@ button {
   flex-direction: row;
   justify-content: space-evenly;
   flex-wrap: wrap;
+}
+
+.invalid input {
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  background-color: rgba(255, 0, 0, 0.25);
+}
+.invalid select {
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  background-color: rgba(255, 0, 0, 0.25);
+}
+
+.invalid option {
+  background-color: white;
 }
 </style>

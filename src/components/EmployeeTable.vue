@@ -1,6 +1,6 @@
 <template>
   <div class="emp-table">
-    <table class="table table-custom">
+    <table class="table table-hover table-custom">
       <thead>
         <tr class="centered">
           <th scope="col">Avatar</th>
@@ -17,7 +17,7 @@
         <tr v-for="employee in employees" :key="employee.id" class="centered">
           <td>
             <img
-              :src="require('@/assets/' + employee.avatar)"
+              :src="employee.avatar"
               width="50"
               class="rounded"
               style="border-radius: 50%"
@@ -88,6 +88,10 @@ export default {
 .centered {
   text-align: center;
   vertical-align: middle;
+}
+
+.centered th {
+  padding: 0.7rem 1rem 0.7rem 1rem;
 }
 
 .fa-user-minus:hover {

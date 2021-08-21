@@ -6,7 +6,7 @@
         type="button"
         class="close"
         aria-label="Close"
-        style="background-color: transparent; border: none; margin: 0;"
+        style="background-color: transparent; border: none; margin: 0; padding: 5px 15px 0 5px"
         @click="closeModal"
       >
         <span style="font-size: 2rem;">&times;</span>
