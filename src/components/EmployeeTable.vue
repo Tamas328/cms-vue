@@ -1,5 +1,6 @@
 <template>
   <div class="emp-table">
+    <input type="text" v-model="search" placeholder="Search Employee" />
     <table class="table table-hover table-custom">
       <thead>
         <tr class="centered">
@@ -14,7 +15,11 @@
         </tr>
       </thead>
       <tbody id="table-list" class="centered table-light">
-        <tr v-for="employee in employees" :key="employee.id" class="centered">
+        <tr
+          v-for="employee in filteredEmployees"
+          :key="employee.id"
+          class="centered"
+        >
           <td>
             <img
               :src="employee.avatar"
@@ -74,7 +79,23 @@ export default {
         employees.value = docs;
       });
 
-    return { employees };
+    return { employees, search: "" };
+  },
+  computed: {
+    filteredEmployees() {
+      const value = this.search.toLowerCase().slice(1);
+      return this.employees.filter((employee) => {
+        return (
+          (employee.firstName + " " + employee.lastName)
+            .toLowerCase()
+            .indexOf(value) > -1 ||
+          (employee.lastName + " " + employee.firstName)
+            .toLowerCase()
+            .indexOf(value) > -1 ||
+          employee.email.toLowerCase().indexOf(value) > -1
+        );
+      });
+    },
   },
 };
 </script>

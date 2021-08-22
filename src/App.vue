@@ -16,7 +16,7 @@
       <div class="modal-body">
         <div class="col-lg-10 top10">
           <img
-            :src="require('@/assets/' + this.toEditEmployee.avatar)"
+            :src="this.toEditEmployee.avatar"
             style="width: 250px; margin-bottom: 10px; border-radius: 50%"
           />
         </div>

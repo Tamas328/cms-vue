@@ -74,7 +74,12 @@
         />
       </div>
       <div class="col-lg-10 form-buttons">
-        <button type="submit" class="btn btn-primary">Add employee</button>
+        <button type="submit" class="btn btn-primary" v-if="!isPending">
+          Add employee
+        </button>
+        <button class="btn btn-primary" v-else disabled>
+          Saving...
+        </button>
         <button type="reset" @click="resetForm" class="btn btn-primary">
           Reset
         </button>
@@ -93,6 +98,7 @@ export default {
   data() {
     return {
       fileUp: useStorage(),
+      isPending: false,
       maxDate: moment(new Date())
         .subtract(16, "years")
         .format("YYYY-MM-DD"),
@@ -172,10 +178,12 @@ export default {
           email: this.enteredEmail.val,
           gender: this.selectedGender.val,
           birthdate: moment(this.enteredBirthdate.val).format("D MMMM YYYY"),
-          avatar: "default.png",
+          avatar:
+            "https://firebasestorage.googleapis.com/v0/b/cms-internship-87e6e.appspot.com/o/avatars%2Fdefault.png?alt=media&token=33c8ed34-951e-4bb0-b42f-e992364c5fef",
           createdAt: new Date(),
         });
       } else {
+        this.isPending = true;
         await this.fileUp.uploadImage(this.enteredImage);
         await projectFirestore.collection("employees").add({
           firstName: this.enteredFirstName.val,
@@ -186,6 +194,7 @@ export default {
           avatar: this.fileUp.url,
           createdAt: new Date(),
         });
+        this.isPending = false;
       }
 
       this.enteredFirstName.val = "";
