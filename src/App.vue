@@ -16,6 +16,7 @@
       <div class="modal-body">
         <div class="col-lg-10 top10">
           <img
+            id="avatar"
             :src="this.toEditEmployee.avatar"
             style="width: 250px; margin-bottom: 10px; border-radius: 50%"
           />
@@ -97,8 +98,16 @@
         <button type="button" class="btn btn-secondary" @click="closeModal">
           Close
         </button>
-        <button type="button" class="btn btn-primary" @click="updateEmployee">
+        <button
+          type="button"
+          class="btn btn-primary"
+          v-if="!isPending"
+          @click="updateEmployee"
+        >
           Save changes
+        </button>
+        <button type="button" class="btn btn-primary" v-else disabled>
+          Updating...
         </button>
       </div>
     </template>
@@ -117,11 +126,15 @@ import moment from "moment";
 import EmployeeTable from "./components/EmployeeTable.vue";
 import { projectFirestore } from "./firebase/config";
 import EditEmployee from "./components/EditEmployee.vue";
+import useStorage from "@/firebase/useStorage";
 
 export default {
   components: { EmployeeTable, EditEmployee },
   data() {
     return {
+      uImage: {},
+      fileUp: useStorage(),
+      isPending: false,
       showModal: false,
       employees: [],
       toEditEmployee: {},
@@ -152,14 +165,18 @@ export default {
       this.showModal = false;
     },
     onAvatarChange(event) {
-      this.toEditEmployee.avatar = event.target.files[0].name;
+      this.uImage = event.target.files[0];
+      this.toEditEmployee.avatar = require("@/assets/" +
+        event.target.files[0].name);
     },
     async updateEmployee() {
+      this.isPending = true;
+      await this.fileUp.uploadImage(this.uImage);
       await projectFirestore
         .collection("employees")
         .doc(this.toEditEmployee.id)
         .update({
-          avatar: this.toEditEmployee.avatar,
+          avatar: this.fileUp.url,
           firstName: this.toEditEmployee.firstName,
           lastName: this.toEditEmployee.lastName,
           email: this.toEditEmployee.email,
@@ -168,6 +185,7 @@ export default {
             "D MMMM YYYY"
           ),
         });
+      this.isPending = false;
       this.closeModal();
     },
   },

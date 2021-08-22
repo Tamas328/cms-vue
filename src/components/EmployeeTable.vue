@@ -1,6 +1,11 @@
 <template>
   <div class="emp-table">
-    <input type="text" v-model="search" placeholder="Search Employee" />
+    <input
+      id="search"
+      type="text"
+      v-model="search"
+      placeholder="Search Employee"
+    />
     <table class="table table-hover table-custom">
       <thead>
         <tr class="centered">
@@ -124,5 +129,27 @@ export default {
 }
 .rounded {
   border-radius: 50%;
+}
+
+#search {
+  font-size: 16px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 24px;
+  border: 1px solid #dfe1e5;
+  background-color: #fff;
+  box-shadow: none;
+  padding-left: 20px;
+}
+
+#search:hover {
+  box-shadow: 0 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: 1px solid transparent;
+}
+
+#search:focus {
+  outline: none;
+  box-shadow: 0 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: 1px solid transparent;
 }
 </style>
