@@ -132,12 +132,12 @@ export default {
   components: { EmployeeTable, EditEmployee },
   data() {
     return {
-      uImage: {},
       fileUp: useStorage(),
       isPending: false,
       showModal: false,
       employees: [],
       toEditEmployee: {},
+      uImage: {},
     };
   },
   methods: {
@@ -158,8 +158,8 @@ export default {
       this.toEditEmployee.birthdate = moment(
         new Date(this.toEditEmployee.birthdate)
       ).format("yyyy-MM-DD");
+      this.uImage = this.toEditEmployee.avatar;
       this.showModal = true;
-      console.log(this.toEditEmployee);
     },
     closeModal() {
       this.showModal = false;
@@ -171,20 +171,37 @@ export default {
     },
     async updateEmployee() {
       this.isPending = true;
-      await this.fileUp.uploadImage(this.uImage);
-      await projectFirestore
-        .collection("employees")
-        .doc(this.toEditEmployee.id)
-        .update({
-          avatar: this.fileUp.url,
-          firstName: this.toEditEmployee.firstName,
-          lastName: this.toEditEmployee.lastName,
-          email: this.toEditEmployee.email,
-          gender: this.toEditEmployee.gender,
-          birthdate: moment(this.toEditEmployee.birthdate).format(
-            "D MMMM YYYY"
-          ),
-        });
+      if (this.uImage == this.toEditEmployee.avatar) {
+        await projectFirestore
+          .collection("employees")
+          .doc(this.toEditEmployee.id)
+          .update({
+            avatar: this.toEditEmployee.avatar,
+            firstName: this.toEditEmployee.firstName,
+            lastName: this.toEditEmployee.lastName,
+            email: this.toEditEmployee.email,
+            gender: this.toEditEmployee.gender,
+            birthdate: moment(this.toEditEmployee.birthdate).format(
+              "D MMMM YYYY"
+            ),
+          });
+      } else {
+        await this.fileUp.uploadImage(this.uImage);
+        await projectFirestore
+          .collection("employees")
+          .doc(this.toEditEmployee.id)
+          .update({
+            avatar: this.fileUp.url,
+            firstName: this.toEditEmployee.firstName,
+            lastName: this.toEditEmployee.lastName,
+            email: this.toEditEmployee.email,
+            gender: this.toEditEmployee.gender,
+            birthdate: moment(this.toEditEmployee.birthdate).format(
+              "D MMMM YYYY"
+            ),
+          });
+      }
+
       this.isPending = false;
       this.closeModal();
     },
